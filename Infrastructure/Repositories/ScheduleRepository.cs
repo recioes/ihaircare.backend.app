@@ -1,32 +1,49 @@
 ﻿using Core.Entities;
+using Infrastructure.Factories.Interfaces;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Infrastructure.Repositories
 {
     public class ScheduleRepository : IScheduleRepository
     {
-        public async Task AddAsync(Schedule schedule)
+
+        private readonly IMongoCollection<Schedule> _schedules;
+
+        public ScheduleRepository(IMongoCollectionFactory<Schedule> collectionFactory)
         {
-            throw new NotImplementedException();
+            _schedules = collectionFactory.GetCollection();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task AddAsync(Schedule schedule)
         {
-            throw new NotImplementedException();
+            await _schedules.InsertOneAsync(schedule);
+        }
+
+        public async Task DeleteAsync(ObjectId id)
+        {
+            var filter = Builders<Schedule>
+                .Filter
+                .Eq(s => s.Id, id);
+
+            await _schedules.DeleteOneAsync(filter);
         }
 
         public async Task<IEnumerable<Schedule>> GetAsync()
         {
-            throw new NotImplementedException();
+            return await _schedules.Find(FilterDefinition<Schedule>.Empty).ToListAsync();
         }
 
-        public async Task GetById(Guid id)
+        public async Task<Schedule> GetByIdAsync(ObjectId id)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Schedule>.Filter.Eq(s => s.Id, id);
+            return await _schedules.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task UpdateAsync(Schedule schedule)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Schedule>.Filter.Eq(s => s.Id, schedule.Id);
+            await _schedules.ReplaceOneAsync(filter, schedule);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using MongoDB.Bson;
 
 namespace Infrastructure
 {
@@ -6,8 +7,8 @@ namespace Infrastructure
     {
         Task AddAsync(Schedule schedule);
         Task UpdateAsync(Schedule schedule);
-        Task DeleteAsync(Guid id);
-        Task GetById(Guid id);
+        Task DeleteAsync(ObjectId id);
+        Task<Schedule> GetByIdAsync(ObjectId id);
         Task<IEnumerable<Schedule>> GetAsync();
     }
 }

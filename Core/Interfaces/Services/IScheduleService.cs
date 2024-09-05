@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using MongoDB.Bson;
 
 namespace Core.Interfaces.Services
 {
@@ -6,8 +7,8 @@ namespace Core.Interfaces.Services
     {
         Task CreateScheduleAsync(Schedule schedule);
         Task UpdateScheduleAsync(Schedule schedule);
-        Task DeleteScheduleAsync(Guid id);
-        Task GetById(Guid id);
+        Task DeleteScheduleAsync(ObjectId id);
+        Task<Schedule> GetScheduleById(ObjectId id);
         Task<IEnumerable<Schedule>> GetScheduleAsync();
 
     }

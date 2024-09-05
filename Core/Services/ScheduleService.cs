@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Infrastructure;
+using MongoDB.Bson;
 
 namespace Core.Services
 {
@@ -16,27 +17,27 @@ namespace Core.Services
 
         public async Task CreateScheduleAsync(Schedule schedule)
         {
-            throw new NotImplementedException();
+            await _scheduleRepository.AddAsync(schedule);
         }
 
-        public async Task DeleteScheduleAsync(Guid id)
+        public async Task DeleteScheduleAsync(ObjectId id)
         {
-            throw new NotImplementedException();
+            await _scheduleRepository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<Schedule>> GetScheduleAsync()
         {
-            throw new NotImplementedException();
+            return await _scheduleRepository.GetAsync();
         }
 
-        public async Task GetById(Guid id)
+        public async Task<Schedule> GetScheduleById(ObjectId id)
         {
-            throw new NotImplementedException();
+            return await _scheduleRepository.GetByIdAsync(id);
         }
 
         public async Task UpdateScheduleAsync(Schedule schedule)
         {
-            throw new NotImplementedException();
+            await _scheduleRepository.UpdateAsync(schedule);
         }
     }
 }
