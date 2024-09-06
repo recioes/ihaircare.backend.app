@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 using MongoDB.Bson;
 
 namespace Infrastructure
@@ -10,5 +11,6 @@ namespace Infrastructure
         Task DeleteAsync(ObjectId id);
         Task<Schedule> GetByIdAsync(ObjectId id);
         Task<IEnumerable<Schedule>> GetAsync();
+        Task<bool> HasUserScheduleOnDateAsync(ObjectId UserId, DateTime Date);
     }
 }

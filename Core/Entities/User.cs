@@ -1,11 +1,12 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Core.Entities
 {
     public class User
     {
         [BsonId]
-        public Guid Id { get; set; }
+        public ObjectId Id { get; set; }
 
         [BsonElement("name")]
         public string Name { get; set; }
