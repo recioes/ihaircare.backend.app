@@ -1,6 +1,13 @@
-﻿using Infrastructure.Providers;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Core.Entities;
+using Infrastructure;
+using Infrastructure.Factories.Interfaces;
+using Infrastructure.Factories;
+using Infrastructure.Providers;
+using Infrastructure.Providers.Interfaces;
+using Infrastructure.Repositories;
 using MongoDB.Driver;
+using System.Security.Cryptography;
+using Core.Interfaces.Repositories;
 
 namespace Api.Extensions
 {
@@ -8,23 +15,38 @@ namespace Api.Extensions
     {
         public static IServiceCollection ConfigureInfrastructure(this IServiceCollection services)
         {
-            services.AddMemoryCache();
-
-            services.AddMongoDb();
-
-            return services;
+            return services
+                .AddProviders()
+                .AddRepositories()
+                .AddDatabases()
+                .AddFactories();
         }
 
-        public static IServiceCollection AddMongoDb(this IServiceCollection services) 
+        public static IServiceCollection AddProviders(this IServiceCollection services)
         {
-            string mongoConnectionString = EnvironmentVariablesProvider.MongoDbConnectionString;
+            return services.AddSingleton<IEnvironmentVariablesProvider, EnvironmentVariablesProvider>();
+        }
 
-            services.AddSingleton<IMongoClient, MongoClient>(sp =>
+        public static IServiceCollection AddFactories(this IServiceCollection services)
+        {
+            return services.AddSingleton(typeof(IMongoCollectionFactory<>), typeof(MongoCollectionFactory<>));
+        }
+
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            return services
+                .AddScoped<IScheduleRepository, ScheduleRepository>()
+                .AddScoped<ITreatmentRepository, TreatmentRepository>();
+        }
+
+        public static IServiceCollection AddDatabases(this IServiceCollection services)
+        {
+            return services.AddSingleton<IMongoClient>(sp =>
             {
-                return new MongoClient(mongoConnectionString);
+                var envProvider = sp.GetRequiredService<IEnvironmentVariablesProvider>();
+                return new MongoClient(envProvider.MongoDb__ConnectionString);
             });
-
-            return services;
         }
 
     }

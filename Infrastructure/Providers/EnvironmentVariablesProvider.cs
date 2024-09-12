@@ -4,11 +4,11 @@ namespace Infrastructure.Providers
 {
     public class EnvironmentVariablesProvider : IEnvironmentVariablesProvider
     {
-        public string MongoDb__ConnectionString { get; set; }
-        public string Mongo_Db_Name { get; set; }
-        public string Mongo_Schedule_Collection { get; set; }
+        public string MongoDb__ConnectionString { get; }
+        public string Mongo_Db_Name { get; }
+        public string Mongo_Schedule_Collection { get; }
 
-        public EnvironmentVariablesProvider(string mongoDb__ConnectionString, string mongo_Db_Name, string mongo_Schedule_Collection)
+        public EnvironmentVariablesProvider()
         {
             MongoDb__ConnectionString = GetRequiredStringVariable(VariableKeys.MONGO_DB_CONNECTION_STRING);
             Mongo_Db_Name = GetRequiredStringVariable(VariableKeys.MONGO_DB_NAME);
@@ -20,6 +20,5 @@ namespace Infrastructure.Providers
             return Environment.GetEnvironmentVariable(environmentVariable)
                 ?? throw new InvalidOperationException($"Environment variable '{environmentVariable}' is not set.");
         }
-
     }
 }

@@ -14,8 +14,11 @@ namespace Core.Entities
         [BsonElement("scheduledDate")]
         public DateTime ScheduledDate { get; set; }
 
+        [BsonElement("nextScheduledDate")]
+        public DateTime? NextScheduledDate { get; set; }
+
         [BsonElement("frequency")]
-        public int FrequencyInDays { get; set; }
+        public int? FrequencyInDays { get; set; }
 
         [BsonElement("notes")]
         public string? Notes { get; set; }

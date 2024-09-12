@@ -1,29 +1,56 @@
 using Api.Extensions;
+using Api.Middlewares;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureInfrastructure();
-
-
-
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+ServiceConfigurations(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+Configurations(app);
+
+static void ServiceConfigurations(IServiceCollection services, IConfiguration configuration)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    services.ConfigureInfrastructure();
+    services.ConfigureServices();
+
+    services.AddControllers();
+
+    services.AddEndpointsApiExplorer();
+
+    services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "iHairCare", Version = "v1" });
+
+        c.EnableAnnotations();
+    });
+
+    services.AddHealthChecks()
+       .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "ready", "live" });
 }
 
-app.UseHttpsRedirection();
+static void Configurations(WebApplication app)
+{
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.UseAuthorization();
+    app.UseMiddleware<ExceptionMiddleware>();
 
-app.MapControllers();
+    app.UseHttpsRedirection();
 
-app.Run();
+    app.UseRouting();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapHealthChecks("/health");
+
+    app.MapControllers();
+
+    app.Run();
+}
