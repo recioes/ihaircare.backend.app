@@ -18,13 +18,7 @@ namespace Api.Extensions
 
             public static IServiceCollection AddServices(this IServiceCollection services)
             {
-            services
-            .AddScoped<IScheduleService, ScheduleService>()
-            .AddScoped<ITreatmentService, TreatmentService>();
-
-
-
-            return services;
+            return services.AddScoped<IScheduleService, ScheduleService>();
             }
 
         public static IServiceCollection AddValidators(this IServiceCollection services)

@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace Core.DTOs
+﻿namespace Core.DTOs
 {
     public class TreatmentDto
     {

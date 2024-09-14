@@ -1,13 +1,10 @@
-﻿using Core.Entities;
-using Infrastructure;
-using Infrastructure.Factories.Interfaces;
+﻿using Infrastructure;
 using Infrastructure.Factories;
+using Infrastructure.Factories.Interfaces;
 using Infrastructure.Providers;
 using Infrastructure.Providers.Interfaces;
 using Infrastructure.Repositories;
 using MongoDB.Driver;
-using System.Security.Cryptography;
-using Core.Interfaces.Repositories;
 
 namespace Api.Extensions
 {
@@ -35,9 +32,7 @@ namespace Api.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            return services
-                .AddScoped<IScheduleRepository, ScheduleRepository>()
-                .AddScoped<ITreatmentRepository, TreatmentRepository>();
+            return services.AddScoped<IScheduleRepository, ScheduleRepository>();
         }
 
         public static IServiceCollection AddDatabases(this IServiceCollection services)
