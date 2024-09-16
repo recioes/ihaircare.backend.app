@@ -1,6 +1,7 @@
 using Api.Extensions;
 using Api.Middlewares;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,17 @@ static void ServiceConfigurations(IServiceCollection services, IConfiguration co
 
     services.AddHealthChecks()
        .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "ready", "live" });
+
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAllOrigins",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 }
 
 static void Configurations(WebApplication app)
@@ -38,6 +50,8 @@ static void Configurations(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    app.UseCors("AllowAllOrigins");
 
     app.UseMiddleware<ExceptionMiddleware>();
 
