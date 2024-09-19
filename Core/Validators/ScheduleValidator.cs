@@ -12,10 +12,6 @@ namespace Core.Validators
         {
             _scheduleRepository = scheduleRepository;
 
-            RuleFor(schedule => schedule.Id)
-                .NotEmpty().WithMessage("Schedule cannot be null");
-
-
             RuleFor(schedule => schedule)
                 .Must(schedule => schedule.StartDate <= schedule.EndDate)
                 .WithMessage("End date must be greater than or equal to the start date.")
