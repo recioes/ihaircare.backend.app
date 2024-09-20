@@ -9,11 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D4CC7A6A-C4D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8BB7E72A-E5CD-43AB-9CC5-2DC1EF10D127}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{0A5BAE97-2D76-49E9-9794-653DA255E53A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

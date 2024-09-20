@@ -14,10 +14,8 @@ namespace Core.Validators
 
             RuleFor(schedule => schedule)
                 .Must(schedule => schedule.StartDate <= schedule.EndDate)
-                .WithMessage("End date must be greater than or equal to the start date.")
-                .MustAsync(async (schedule, cancellation) =>
-                    !(await _scheduleRepository.HasUserScheduleOnDateAsync(schedule.UserId, schedule.StartDate)))
-                .WithMessage(schedule => $"There is already a schedule for the user on this start date: {schedule.StartDate.ToString("dd/MM/yyyy")}");
+                .WithMessage("End date must be greater than or equal to the start date.");
+           
 
             RuleFor(schedule => schedule.Treatments)
                 .NotEmpty().WithMessage("At least one treatment is required");

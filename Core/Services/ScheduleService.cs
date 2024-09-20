@@ -1,8 +1,10 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Extensions;
 using Core.Interfaces.Services;
 using FluentValidation;
 using Infrastructure;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
 namespace Core.Services
@@ -11,31 +13,18 @@ namespace Core.Services
     {
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IValidator<Schedule> _scheduleValidator;
+        private readonly ILogger<ScheduleService> _logger;
 
-        public ScheduleService(IScheduleRepository scheduleRepository, IValidator<Schedule> scheduleValidator)
+        public ScheduleService(IScheduleRepository scheduleRepository, IValidator<Schedule> scheduleValidator, ILogger<ScheduleService> logger)
         {
             _scheduleRepository = scheduleRepository;
             _scheduleValidator = scheduleValidator;
+            _logger = logger;
         }
 
         public async Task CreateScheduleAsync(ScheduleDto scheduleDto)
         {
-            var schedule = new Schedule
-            {
-                Title = scheduleDto.Title,
-                StartDate = scheduleDto.StartDate,
-                EndDate = scheduleDto.EndDate,
-                Treatments = scheduleDto.Treatments.Select(t => new Treatment
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Name = t.Name,
-                    ScheduledDate = scheduleDto.StartDate,
-                    FrequencyInDays = t.FrequencyInDays,
-                    Notes = t.Notes,
-                    IsCompleted = false
-                }).ToList(),
-                IsCompleted = false
-            };
+            var schedule = scheduleDto.MapToSchedule();
 
             var validationResult = await _scheduleValidator.ValidateAsync(schedule);
 
@@ -45,11 +34,13 @@ namespace Core.Services
             }
 
             await _scheduleRepository.AddAsync(schedule);
+            _logger.LogInformation("Schedule {Title} succesfully created.", scheduleDto.Title);
 
             var frequencySelected = scheduleDto.Treatments.Any(f => f.FrequencyInDays.HasValue);
 
             if (frequencySelected)
             {
+                _logger.LogInformation("Generating recurring treatments for schedule {Title}", scheduleDto.Title);
                 await GenerateRecurringTreatments(schedule);
             }
         }
@@ -98,18 +89,9 @@ namespace Core.Services
                 throw new InvalidOperationException("Schedule not found.");
             }
 
-            schedule.Title = scheduleDto.Title;
-            schedule.StartDate = scheduleDto.StartDate;
-            schedule.EndDate = scheduleDto.EndDate;
+            scheduleDto.MapToUpdatedSchedule(schedule);
 
-            var updatedTreatments = scheduleDto.Treatments.Select(t => new Treatment
-            {
-                Name = t.Name,
-                ScheduledDate = scheduleDto.StartDate,
-                FrequencyInDays = t.FrequencyInDays,
-                Notes = t.Notes,
-                IsCompleted = false
-            }).ToList();
+            var updatedTreatments = scheduleDto.MapToUpdatedScheduledTreatments();
 
             SyncTreatments(schedule, updatedTreatments);
 
@@ -121,7 +103,13 @@ namespace Core.Services
 
             await _scheduleRepository.UpdateAsync(schedule);
 
-            await GenerateRecurringTreatments(schedule);
+            var frequencyUpdated = updatedTreatments.Any(t => t.FrequencyInDays.HasValue && t.FrequencyInDays != null);
+
+            if (frequencyUpdated)
+            {
+                _logger.LogInformation("Frequency updated. Generating recurring treatments for updated schedule {Title}", scheduleDto.Title);
+                await GenerateRecurringTreatments(schedule);
+            }
         }
 
         private void SyncTreatments(Schedule schedule, List<Treatment> updatedTreatments)
@@ -139,18 +127,39 @@ namespace Core.Services
                 .Where(ut => !schedule.Treatments.Any(t => t.ScheduledDate == ut.ScheduledDate && t.Name == ut.Name))
                 .ToList();
 
+            foreach (var newTreatment in newTreatments)
+            {
+                newTreatment.Id = ObjectId.GenerateNewId();  
+            }
+
             schedule.Treatments.AddRange(newTreatments);
 
             foreach (var treatment in schedule.Treatments)
             {
-                var updatedTreatment = updatedTreatments.FirstOrDefault(ut => ut.ScheduledDate == treatment.ScheduledDate && ut.Name == treatment.Name);
-                if (updatedTreatment != null)
-                {
-                    treatment.Notes = updatedTreatment.Notes;
-                    treatment.FrequencyInDays = updatedTreatment.FrequencyInDays;
-                    treatment.IsCompleted = updatedTreatment.IsCompleted;
-                }
+                UpdateTreatments(updatedTreatments, treatment);
             }
+        }
+
+        private void UpdateTreatments(List<Treatment> updatedTreatments, Treatment treatment)
+        {
+            var updatedTreatment = updatedTreatments
+                                .FirstOrDefault(ut => ut.ScheduledDate == treatment.ScheduledDate && ut.Name == treatment.Name);
+
+            if (updatedTreatment != null)
+            {
+                treatment.Notes = UpdateIfDifferent(treatment.Notes, updatedTreatment.Notes);
+                treatment.FrequencyInDays = UpdateIfDifferent(treatment.FrequencyInDays, updatedTreatment.FrequencyInDays);
+                treatment.IsCompleted = UpdateIfDifferent(treatment.IsCompleted, updatedTreatment.IsCompleted);
+            }
+        }
+
+        private T UpdateIfDifferent<T>(T originalValue, T newValue)
+        {
+            if (!EqualityComparer<T>.Default.Equals(originalValue, newValue))
+            {
+                return newValue;
+            }
+            return originalValue;
         }
 
         private async Task GenerateRecurringTreatments(Schedule schedule)
