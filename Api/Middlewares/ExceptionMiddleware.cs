@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson.IO;
-using System.Net;
+﻿using System.Net;
 
 namespace Api.Middlewares
 {
