@@ -1,25 +1,69 @@
+using Api.Extensions;
+using Api.Middlewares;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+ServiceConfigurations(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+Configurations(app);
+
+static void ServiceConfigurations(IServiceCollection services, IConfiguration configuration)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    services.ConfigureInfrastructure();
+    services.ConfigureServices();
+
+    services.AddControllers();
+
+    services.AddEndpointsApiExplorer();
+
+    services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "iHairCare", Version = "v1" });
+
+        c.EnableAnnotations();
+    });
+
+    services.AddHealthChecks()
+       .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: new[] { "ready", "live" });
+
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAllOrigins",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 }
 
-app.UseHttpsRedirection();
+static void Configurations(WebApplication app)
+{
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.UseAuthorization();
+    app.UseCors("AllowAllOrigins");
 
-app.MapControllers();
+    app.UseMiddleware<ExceptionMiddleware>();
 
-app.Run();
+    app.UseHttpsRedirection();
+
+    app.UseRouting();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapHealthChecks("/health");
+
+    app.MapControllers();
+
+    app.Run();
+}

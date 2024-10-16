@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{B15952DE-3A1F-4D48-BA7B-F85A171C20BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{B15952DE-3A1F-4D48-BA7B-F85A171C20BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D4CC7A6A-C4D9-4B75-8E5C-A6084CA91B60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8BB7E72A-E5CD-43AB-9CC5-2DC1EF10D127}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{0A5BAE97-2D76-49E9-9794-653DA255E53A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +27,10 @@ Global
 		{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B15952DE-3A1F-4D48-BA7B-F85A171C20BF} = {D4CC7A6A-C4D9-4B75-8E5C-A6084CA91B60}
 		{F6780CF8-0EDC-43E1-AC0C-19C9DA6E59D2} = {D4CC7A6A-C4D9-4B75-8E5C-A6084CA91B60}
+		{DB84A93E-89A2-4D7F-9D72-1F6BA59AA6F2} = {D4CC7A6A-C4D9-4B75-8E5C-A6084CA91B60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29C33C60-5EE3-4963-8E90-DD5ADBB11672}
